@@ -1,6 +1,8 @@
 import { UserModel } from "@prisma/client";
+import { compare, setRandomFallback } from "bcryptjs";
 import { inject, injectable } from "inversify";
 import { ConfigService } from "../config/config.service";
+import { HTTPError } from "../errors/http.error.class";
 import { TYPES } from "../types";
 import { UserLoginDto } from "./dto/user-login.dto";
 import { UserRegisterDto } from "./dto/user-register.dto";
@@ -26,16 +28,24 @@ export class UserService implements IUserService {
             return this.userRepository.create(newUser);
     }
 
-    async validateUser ({email, password}: UserLoginDto): Promise<boolean>{
+    async validateUser ({email, password}: UserLoginDto): Promise<UserModel | null>{
     const existUser = await this.userRepository.find(email);
     
     if (!existUser){
-       return false;
+        console.log(new HTTPError(401, 'не вырний логін'));
+       return null;
     }
-    const newUserLogin = new User (existUser.name, email, existUser.password);
-    return newUserLogin.comparePassword(password);
+    
+     if (await compare(password, existUser.password)){
+         return existUser;
+     }
+     console.log(new HTTPError(401, 'не вiрний пароль'));
+     return null;
 
     }
+
+
+
     async getUserInfo (email: string): Promise<UserModel | null>{
         return await this.userRepository.find(email);
     }

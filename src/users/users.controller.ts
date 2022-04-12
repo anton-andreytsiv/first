@@ -13,11 +13,13 @@ import { ValidateMiddlware } from '../common/validate.middlware';
 import { sign } from "jsonwebtoken";
 import { IConfigService } from '../config/config.service.interface';
 import { GuardMiddlware } from '../common/guard.middlware';
+import {} from 'path'
 
 
 
 @injectable()
 export class UserController extends BaseController implements IUser {
+	
 	constructor(
 		@inject(TYPES.Ilogger) private loggerService: ILogger,
 		@inject(TYPES.UserService) private userService: IUserService,
@@ -26,6 +28,11 @@ export class UserController extends BaseController implements IUser {
 	) {
 		super(loggerService);
 		this.bindRoutes([
+			{ path: '/',
+			method: "get", 
+			func: this.start,
+			middlwares: []	
+		},
 			{ path: '/register',
 			method: 'post', 
 			func: this.register,
@@ -34,31 +41,42 @@ export class UserController extends BaseController implements IUser {
 			{ path: '/login', 
 			method: 'post', 
 			func: this.login, 
-			middlwares: [new ValidateMiddlware(UserLoginDto)]},
-			
+			middlwares: [new ValidateMiddlware(UserLoginDto)]
+		},			
 			{ path: '/info', 
 			method: 'get', 
 			func: this.info, 
-			middlwares: [new GuardMiddlware()]},
+			middlwares: [new GuardMiddlware()]
+		},
 		]);
 	}
 
-	async login({body}: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): Promise<void> {
-		const result = await this.userService.validateUser(body);
+	start (req: Request, res:Response, next:NextFunction){
+		res.sendFile('../../public/index.html');
+	}
 
+	async login({body}: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): Promise<void> {
+		const path = require('path');
+
+		const result = await this.userService.validateUser(body);
 		if (result) {
-			const jwt = await this.signJwt(body.email, this.configService.get('SECRET'))
-			this.ok(res, {jwt});
+			const jwt = await this.signJwt(result.id, this.configService.get('SECRET'))
+			res.cookie('token',jwt, { maxAge: 900000, httpOnly: true });
+			if(result.roleId==1){
+				res.sendFile(path.join(__dirname, '../public', 'admin.html'));
+			} else{
+				res.sendFile(path.join(__dirname, '../public', 'customer.html'));
+			}
 		} else {
-			next(new HTTPError(401, 'не вырний логін чи пароль'));
+			res.sendFile(path.join(__dirname, '../public', 'login.html'));
 		}
 		
 		
 	}
-	private signJwt (email:string, secret:string): Promise<string>{
+	private signJwt (id:number, secret:string): Promise<string>{
 		return new Promise((resolve, reject) =>{
 			sign(
-				{email,
+				{id,
 				iat: Math.floor(Date.now() / 1000)},
 				secret,
 				{

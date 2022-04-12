@@ -1,4 +1,4 @@
-import express, { Express } from 'express';
+import express, { Express, Request, Response } from 'express';
 import { Server } from 'http';
 import { inject, injectable } from 'inversify';
 import { ExeptionFilter } from './errors/exeption.filters';
@@ -27,16 +27,22 @@ export class App {
 	) {
 		this.app = express();
 		this.port = 8000;
+		this.app.use(express.static(__dirname + '/public'));
 	}
 
 	userMiddleware(): void {
-		this.app.use(bodyParser.json());
+		//this.app.use(bodyParser.json());
+		this.app.use(bodyParser.urlencoded({ extended: false }));
 		const authMiddlware = new AuthMiddlware(this.configService.get('SECRET'));
 		this.app.use(authMiddlware.execute.bind(authMiddlware));
 	}
 
 	userRoutes(): void {
 		this.app.use('/users', this.userController.router);
+		this.app.use('/h', (req: Request, res: Response)=>{
+			res.sendFile(__dirname + '/public/index.html');
+		});
+		
 	}
 
 	useExeptionFilter(): void {
