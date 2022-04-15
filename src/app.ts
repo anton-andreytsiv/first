@@ -11,6 +11,8 @@ import { ConfigService } from './config/config.service';
 import { IExeptionFilter } from './errors/exeption.filter.interface';
 import { PrismaService } from './database/prisma.service';
 import { AuthMiddlware } from './common/auth.middlware';
+import cookieParser from "cookie-parser";
+
 
 @injectable()
 export class App {
@@ -28,20 +30,23 @@ export class App {
 		this.app = express();
 		this.port = 8000;
 		this.app.use(express.static(__dirname + '/public'));
+		this.app.use(cookieParser());
 	}
 
 	userMiddleware(): void {
 		//this.app.use(bodyParser.json());
 		this.app.use(bodyParser.urlencoded({ extended: false }));
-		const authMiddlware = new AuthMiddlware(this.configService.get('SECRET'));
-		this.app.use(authMiddlware.execute.bind(authMiddlware));
+	}
+	pagesRoutes():void{
+		this.app.use('/admin.html', (req: Request, res: Response)=>{
+			//const authMiddlware = new AuthMiddlware();
+		//	this.app.use(authMiddlware.execute.bind(authMiddlware));
+			});
+
 	}
 
 	userRoutes(): void {
 		this.app.use('/users', this.userController.router);
-		this.app.use('/h', (req: Request, res: Response)=>{
-			res.sendFile(__dirname + '/public/index.html');
-		});
 		
 	}
 
@@ -51,7 +56,8 @@ export class App {
 
 	public async init(): Promise<void> {
 		this.userMiddleware();
-		this.userRoutes();		
+		this.userRoutes();	
+		this.pagesRoutes();	
 		this.useExeptionFilter();
 		this.prismaService.connect();
 		this.server = this.app.listen(this.port);

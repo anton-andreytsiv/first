@@ -1,4 +1,4 @@
-import { UserModel } from "@prisma/client";
+import { UserModel, Role } from "@prisma/client";
 import { isEmail } from "class-validator";
 import { inject, injectable } from "inversify";
 import { PrismaService } from "../database/prisma.service";
@@ -26,5 +26,20 @@ export class UserRepository {
                 email
             }
         });
+    }
+    async getRole (id: number): Promise<Role | null>{
+        const user = await this.prismaService.client.userModel.findFirst({
+            where :{
+                id
+            }
+        });
+        if (user){
+            return await this.prismaService.client.role.findFirst({
+                where :{
+                    id : user.roleId
+                }
+            });
+        }
+        return null;
     }
 }

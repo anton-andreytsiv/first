@@ -1,6 +1,7 @@
 declare namespace Express{
     export interface Request {
-        user: string;
+        user_id: int;
+        role: string;
     }
 }
 declare namespace jsonwebtoken {

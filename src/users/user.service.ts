@@ -39,7 +39,7 @@ export class UserService implements IUserService {
      if (await compare(password, existUser.password)){
          return existUser;
      }
-     console.log(new HTTPError(401, 'не вiрний пароль'));
+     console.log(new HTTPError(401, 'не врний пароль'));
      return null;
 
     }

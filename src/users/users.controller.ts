@@ -14,7 +14,7 @@ import { sign } from "jsonwebtoken";
 import { IConfigService } from '../config/config.service.interface';
 import { GuardMiddlware } from '../common/guard.middlware';
 import {} from 'path'
-
+import { AuthMiddlware } from '../common/auth.middlware';
 
 
 @injectable()
@@ -24,6 +24,7 @@ export class UserController extends BaseController implements IUser {
 		@inject(TYPES.Ilogger) private loggerService: ILogger,
 		@inject(TYPES.UserService) private userService: IUserService,
 		@inject(TYPES.ConfigService) private configService: IConfigService,
+		@inject(TYPES.AuthMiddleware) private authMiddlware: AuthMiddlware,
 	
 	) {
 		super(loggerService);
@@ -51,24 +52,40 @@ export class UserController extends BaseController implements IUser {
 		]);
 	}
 
-	start (req: Request, res:Response, next:NextFunction){
-		res.sendFile('../../public/index.html');
+	async start (req: Request, res:Response, next:NextFunction){
+		const path = require('path');
+		//console.log(req.cookies['token']);
+		//res.sendFile(path.join(__dirname, '../public', 'admin.html'));
+		await this.authMiddlware.execute(req, res, next);
+		console.log(req.role);
+		if(req.role=='user'){
+			res.sendFile(path.join(__dirname, '../public', 'customer.html'));
+		} else if (req.role=='admin'){
+			res.setHeader('Location', path.join(__dirname, '../public', 'admin.html'));
+		} else{
+			res.sendFile(path.join(__dirname, '../public', 'login.html'));
+		}
+		
 	}
 
-	async login({body}: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): Promise<void> {
+	async login({body, cookies}: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): Promise<void> {
 		const path = require('path');
-
-		const result = await this.userService.validateUser(body);
-		if (result) {
-			const jwt = await this.signJwt(result.id, this.configService.get('SECRET'))
-			res.cookie('token',jwt, { maxAge: 900000, httpOnly: true });
-			if(result.roleId==1){
-				res.sendFile(path.join(__dirname, '../public', 'admin.html'));
-			} else{
-				res.sendFile(path.join(__dirname, '../public', 'customer.html'));
+		if(cookies['token']){
+			
+			
+		} else{
+			const result = await this.userService.validateUser(body);
+			if (result) {
+				const jwt = await this.signJwt(result.id, this.configService.get('SECRET'))
+				res.cookie('token',jwt, { maxAge: 900000, httpOnly: true });
+				if(result.roleId==1){
+					res.sendFile(path.join(__dirname, '../public', 'admin.html'));
+				} else{
+					res.sendFile(path.join(__dirname, '../public', 'customer.html'));
+				}
+			} else {
+				res.sendFile(path.join(__dirname, '../public', 'login.html'));
 			}
-		} else {
-			res.sendFile(path.join(__dirname, '../public', 'login.html'));
 		}
 		
 		
@@ -99,8 +116,8 @@ export class UserController extends BaseController implements IUser {
 		}
 		this.ok(res, { email: result.email, id: result.id });
 	}
-	async info({user}: Request<{}, {}, UserRegisterDto>, res: Response, next: NextFunction): Promise<void> {
-		const userInfo = await this.userService.getUserInfo(user);
+	async info({user_id}: Request<{}, {}, UserRegisterDto>, res: Response, next: NextFunction): Promise<void> {
+		const userInfo = await this.userService.getUserInfo(user_id);
 		this.ok(res, userInfo);
 	}
 }
