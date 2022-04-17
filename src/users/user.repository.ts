@@ -27,6 +27,13 @@ export class UserRepository {
             }
         });
     }
+    async findById (id: number): Promise<UserModel | null>{
+        return this.prismaService.client.userModel.findFirst({
+            where :{
+                id
+            }
+        });
+    }
     async getRole (id: number): Promise<Role | null>{
         const user = await this.prismaService.client.userModel.findFirst({
             where :{

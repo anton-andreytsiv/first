@@ -35,6 +35,7 @@ export class AuthMiddlware {
             }
             
         } else {
+            console.log('no cookies token')
              next();
         }
        

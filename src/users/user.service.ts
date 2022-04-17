@@ -43,7 +43,9 @@ export class UserService implements IUserService {
      return null;
 
     }
-
+    async getUserInfoById (id: number): Promise<UserModel | null>{
+        return await this.userRepository.findById(id);
+    }
 
 
     async getUserInfo (email: string): Promise<UserModel | null>{
