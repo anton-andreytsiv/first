@@ -22,11 +22,11 @@ async function main() {
       email: "user@greenton.com"
     },
       update:{
-      password: await hash('user', 11),
+      password: await hash('admin', 11),
     },
      create:{
     email: 'user@greenton.com',
-    password: await hash('user', 11),
+    password: await hash('admin', 11),
     name: 'user'
   }
   })
