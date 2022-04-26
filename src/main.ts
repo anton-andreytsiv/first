@@ -13,7 +13,7 @@ import { IConfigService } from './config/config.service.interface';
 import { PrismaService } from './database/prisma.service';
 import { UserRepository } from './users/user.repository';
 import { IMiddlware } from './common/middlware.interface';
-import { AuthMiddlware} from './common/auth.middlware';
+import { AuthMiddleware} from './common/auth.middleware';
 
 export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<ILogger>(TYPES.Ilogger).to(LoggerService).inSingletonScope();
@@ -23,7 +23,7 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<ExeptionFilter>(TYPES.ExeptionFilter).to(ExeptionFilter);
 	bind<PrismaService>(TYPES.PrismaService).to(PrismaService).inSingletonScope();
 	bind<UserRepository>(TYPES.UserRepository).to(UserRepository).inSingletonScope();
-	bind<AuthMiddlware>(TYPES.AuthMiddleware).to(AuthMiddlware);
+	bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware);
 	bind<App>(TYPES.Application).to(App);
 });
 
@@ -41,7 +41,4 @@ function bootstarp(): IBootstrap {
 }
 
 export const { app, appContainer } = bootstarp();
-function AuthMiddleware(AuthMiddleware: any) {
-	throw new Error('Function not implemented.');
-}
 

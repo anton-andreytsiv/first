@@ -5,6 +5,7 @@ import { PrismaService } from "../database/prisma.service";
 import { TYPES } from "../types";
 import { User } from "./user.entity";
 
+   
 @injectable()
 export class UserRepository {
 
