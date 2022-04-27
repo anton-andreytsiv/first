@@ -7,6 +7,7 @@ import { UserRepository } from "../users/user.repository";
 import { Role } from "@prisma/client";
 import { ConfigService } from "../config/config.service";
 import 'reflect-metadata';
+import { goUrl } from "../users/users.controller";
 
 @injectable()
 export class AuthMiddleware implements IMiddlware{
@@ -19,9 +20,7 @@ export class AuthMiddleware implements IMiddlware{
     async execute(req: Request, res:Response, next: NextFunction){
         const path = require('path');
         console.log('root auth  ' + req.path);
-        if (req.path.includes('login') || req.path == '/'){
-            console.log ('login html in path ' + req.path)
-            
+        if  (req.path == '/'){
             next();
         } else {
 
@@ -37,13 +36,27 @@ export class AuthMiddleware implements IMiddlware{
                     req.role = role.name;
                     console.log('auth token complite ' + req.path);
                 }
+                //else{
+                    //goUrl(res, '/doa.html');
+                //}
+                /*if (req.path.includes('login')){
+                    console.log('login html with cookies');
+                    if (req.role == "admin"){
+                        goUrl(res, '/admin/admin.html');
+                    } else {
+                        goUrl(res, '/customers/customer.html');
+                    }
+                }*/
                  next();
             } catch (e){
                 console.log(e);
                 next();
             }
             
-        } else {
+        } else if (req.path.includes('login')){
+            next();
+        }
+        else {
             console.log('no cookies token ');
            
             res.setHeader("Location", '/login.html');

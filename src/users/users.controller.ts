@@ -24,7 +24,7 @@ function goLogin(res: Response): void{
     res.status(301);
     res.end();
 }
-function goUrl(res: Response, url: string): void{
+export function goUrl(res: Response, url: string): void{
     res.setHeader("Location", url);
     res.status(301);
     res.end();
@@ -73,23 +73,13 @@ export class UserController extends BaseController implements IUser {
 
 	async start (req: Request, res:Response, next:NextFunction){
 		const path = require('path');
-		//console.log(req.cookies['token']);
-		//res.sendFile(path.join(__dirname, '../public', 'admin.html'));
-		//await this.authMiddlware.execute(req, res, next);
-		console.log(req.role);
-		if(req.role=='user'){
-			res.sendFile(path.join(__dirname, '../public', 'customer.html'));
-		} else if (req.role=='admin'){
-			res.sendFile(path.join(__dirname, '../public', 'admin.html'));
-		} else{
-			res.sendFile(path.join(__dirname, '../public', 'login2.html'));
-		}
+	
 		
 	}
 
 	async login(req: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): Promise<void> {
 		const path = require('path');
-		console.log(req.cookies);
+
 		if(req.body.email){
 			const result = await this.userService.validateUser(req.body);
 			if (result) {
@@ -108,7 +98,7 @@ export class UserController extends BaseController implements IUser {
 			}
 		} else if(req.cookies['token']){
 			try {
-				console.log('token: '+ req.cookies['token']);
+				
                 const user =  verify(req.cookies['token'], this.configService.get("SECRET")) as JwtPayload ;
                 if(user.id){
                     req.user_id = user.id;
@@ -173,7 +163,8 @@ export class UserController extends BaseController implements IUser {
 		}
 	}
 	logout (req: Request, res: Response, next: NextFunction): void{
-		res.cookie('token','', { maxAge: 1, httpOnly: true });
+		console.log('logout');
+		res.cookie('token','my', { maxAge: 1, httpOnly: true });
 		req.user_id = 0;
 		req.role = '';
 		goUrl(res, 'index.html');
