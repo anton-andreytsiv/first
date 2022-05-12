@@ -3,6 +3,22 @@ import { hash } from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
+
+  const f = await prisma.role.create({
+    data:{
+   id: 1,
+   name: 'admin'
+ }
+ })
+ const f2 = await prisma.role.create({
+   data:{
+  id: 2,
+  name: 'user'
+}
+})
+
+
+
   const admin = await prisma.userModel.upsert({
     where: {
       email: "admin@greenton.com"
@@ -13,7 +29,8 @@ async function main() {
       create:{
         email: 'admin@greenton.com',
         password: await hash('admin', 11),
-        name: 'Anton'
+        name: 'Anton',
+        roleId: 1
       }
   })
 
@@ -26,10 +43,13 @@ async function main() {
     },
      create:{
     email: 'user@greenton.com',
-    password: await hash('admin', 11),
-    name: 'user'
+    password: await hash('user', 11),
+    name: 'user',
+    roleId: 2
   }
   })
+
+
 
 }
 

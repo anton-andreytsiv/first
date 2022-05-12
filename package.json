@@ -9,13 +9,13 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist/main.js",
+    "start": "node dist/src/main.js",
     "seed": "ts-node prisma/seed.ts",
     "dev": "nodemon",
     "dev:inspect": "nodemon -e ts,json --exec node --inspect=localhost:9222 -r ts-node/register src/main.ts",
     "lint": "eslint ./src/**",
     "lint:fix": "eslint ./src/** --fix",
-    "build": "tsc.cmd",
+    "build": "tsc",
     "generate": "prisma generate"
   },
   "author": "Anton Andreytsiv",
