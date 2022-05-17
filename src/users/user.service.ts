@@ -32,7 +32,7 @@ export class UserService implements IUserService {
     const existUser = await this.userRepository.find(email);
     
     if (!existUser){
-        console.log(new HTTPError(401, 'не вырний логін'));
+        console.log(new HTTPError(401, 'не вырний логін777'));
        return null;
     }
     

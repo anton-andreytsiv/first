@@ -5,7 +5,6 @@ import { PrismaService } from "../database/prisma.service";
 import { TYPES } from "../types";
 import { User } from "./user.entity";
 
-const db = require('../database/db');
 
    
 @injectable()
@@ -22,17 +21,7 @@ export class UserRepository {
             }
         });
     }
-    async createUser ({ email, password, name }: User): Promise<UserModel | null>{ 
-        try{
-            const newUser = await db.query(`INSERT INTO users (email, password, name, roleId) VALUES ($1, $2, $3, $4)`,[email, password, name, 2])
-            return newUser;
-        }
-        catch(e){
-            console.log(e);
-        }
-        return null;
-        
-    }
+ 
     async find (email: string): Promise<UserModel | null>{
         return this.prismaService.client.userModel.findFirst({
             where :{

@@ -4,21 +4,6 @@ const prisma = new PrismaClient()
 
 async function main() {
 
-  const f = await prisma.role.create({
-    data:{
-   id: 1,
-   name: 'admin'
- }
- })
- const f2 = await prisma.role.create({
-   data:{
-  id: 2,
-  name: 'user'
-}
-})
-
-
-
   const admin = await prisma.userModel.upsert({
     where: {
       email: "admin@greenton.com"
@@ -39,7 +24,7 @@ async function main() {
       email: "user@greenton.com"
     },
       update:{
-      password: await hash('admin', 11),
+      password: await hash('user', 11),
     },
      create:{
     email: 'user@greenton.com',
@@ -48,7 +33,7 @@ async function main() {
     roleId: 2
   }
   })
-
+ console.log('seed file run');
 
 
 }

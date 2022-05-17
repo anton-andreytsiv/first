@@ -4,10 +4,8 @@ import { JwtPayload, verify } from "jsonwebtoken";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../types";
 import { UserRepository } from "../users/user.repository";
-import { Role } from "@prisma/client";
 import { ConfigService } from "../config/config.service";
 import 'reflect-metadata';
-import { goUrl } from "../users/users.controller";
 
 @injectable()
 export class AuthMiddleware implements IMiddlware{
