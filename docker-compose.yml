@@ -1,16 +1,17 @@
 version: "3.9"
 services:
   postgres:
-    container_name: pg_db
-    image: postgres
+    container_name: postgres
+    image: postgres:14.1
+    restart: on-failure
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
       POSTGRES_DB: users_db
     ports: 
-      - '2345:5432'
+      - '5432:5432'
     volumes:
-      - ./user_db:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
 
   api:
     container_name: node_api
@@ -25,4 +26,4 @@ services:
 
         
 volumes:
-  users-db:
+  postgres:

@@ -15,7 +15,11 @@ async function main() {
         email: 'admin@greenton.com',
         password: await hash('admin', 11),
         name: 'Anton',
-        roleId: 1
+        role: {
+          create: {
+            name: "admin"
+          }
+        }
       }
   })
 
@@ -30,7 +34,11 @@ async function main() {
     email: 'user@greenton.com',
     password: await hash('user', 11),
     name: 'user',
-    roleId: 2
+    role: {
+      create: {
+        name: "customer"
+      }
+    }
   }
   })
  console.log('seed file run');
