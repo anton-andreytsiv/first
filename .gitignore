@@ -1,7 +1,12 @@
+/firstServer/node_modules
+/mailServer/node_modules
 /node_modules
 # Keep environment variables out of version control
-/.env
-/dist
-/.clinic
-/prisma/dev.db
-/prisma/dev.db-journal
+/firstServer/.env
+/firstServer/dist
+/firstServer/client/node_modules
+/mailServer/dist
+/firstServer/.clinic
+/firstServer/prisma/dev.db
+/firstServer/prisma/dev.db-journal
+/rabbitmq
