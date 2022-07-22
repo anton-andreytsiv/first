@@ -6,7 +6,7 @@
     <li>{{product.product.title}} - {{product.quantity}}</li>
   </div><hr />
 </div>
-{{order}}
+
 </template>
 
 <script>

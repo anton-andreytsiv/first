@@ -1,7 +1,7 @@
 <template>
 <div class="top">
     <div class="logo"><img alt="greenton logo" src="./assets/logo_greenton.jpg" style="height:50px;"></div>
-    <div v-if="!user"><loginPage @login = "userLogin"/></div>
+    <div v-if="!user"><loginPage /></div>
     <div v-else> Hello {{ user }}
     <button @click="logOut">logout</button>
     <router-link to="/cart">cart({{cartAmount}})</router-link>
@@ -20,6 +20,7 @@
 <script>
 import loginPage from './components/loginPage.vue'
 import { ref } from 'vue'
+import { useCookies } from "vue3-cookies";
 
 export default {
   name: 'App',
@@ -30,6 +31,7 @@ export default {
     }
   },
   setup(){
+    const { cookies } = useCookies();
     const user = ref (null)
     const cartAmount = ref (0)
     const cart2 = JSON.parse(localStorage.getItem('cart'));
@@ -40,23 +42,27 @@ export default {
     if (localStorage.getItem('user')){
       user.value = localStorage.getItem('user')
     }
-    const userLogin = () => {
-      user.value = localStorage.getItem('user')
-    }
-
-    const logOut = () => {
+    
+    function logOut () {
       user.value = null
+      this.cookies.remove("token");
       localStorage.removeItem('user')
       localStorage.removeItem('role')
+      localStorage.removeItem('cart')
+
     }
 
 
-    return {user, userLogin, logOut, cartAmount}
+    return {user, logOut, cartAmount, cookies}
   },
   created () {
       this.emitter.on('addCart', cart => {
       this.cartAmount = Object.keys(cart).length
       
+    })
+
+    this.emitter.on('login', () => {
+      this.user = localStorage.getItem('user')    
     })
   },
 

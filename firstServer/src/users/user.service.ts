@@ -17,10 +17,11 @@ export class UserService implements IUserService {
         @inject(TYPES.UserRepository) private userRepository: UserRepository
         ) {}
 
-    async createUser ({ email, name, password }: UserRegisterDto): Promise<UserModel | null> {
+    async createUser ({ name, email, password }: UserRegisterDto): Promise<UserModel | null> {
         const newUser = new User(name, email);
         const salt = this.configService.get('SALT');
 		await newUser.setPassword(password, salt);
+        console.log(newUser);
         const existUser = await this.userRepository.find(email);
         if (existUser){
             return null;
@@ -32,14 +33,14 @@ export class UserService implements IUserService {
     const existUser = await this.userRepository.find(email);
     
     if (!existUser){
-        console.log(new HTTPError(401, 'не вырний логін777'));
+        console.log(new HTTPError(401, 'wrong login'));
        return null;
     }
     
      if (await compare(password, existUser.password)){
          return existUser;
      }
-     console.log(new HTTPError(401, 'не врний пароль'));
+     console.log(new HTTPError(401, 'wrong password'));
      return null;
 
     }

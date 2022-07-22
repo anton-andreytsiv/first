@@ -30,6 +30,31 @@ class loginService {
     }).catch(error => console.log(error));
   }
 
+  static async register(name, email, password){
+    return axios.post(url+"register", {
+      name, 
+      email,
+      password
+    }, {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      withCredentials: true
+      
+    }).then (response => { 
+      if (response.status == 200) {
+       return response.data;
+      }
+      else {
+        alert ("authorization error");
+        return null
+      }
+
+      
+    }).catch(error => console.log(error));
+  }
+  
+
 }
 
 export default loginService;

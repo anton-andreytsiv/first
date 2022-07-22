@@ -86,7 +86,7 @@ export class UserController extends BaseController implements IUser {
 			
 			if (result) {
 				const jwt = await this.signJwt(result.id, req.body.email, this.configService.get('SECRET'))
-				res.cookie('token',jwt, { maxAge: 9000000, httpOnly: true });
+				res.cookie('token',jwt, { maxAge: 9000000, httpOnly: false });
 				req.user_id = result.id;
 				req.email = result.email;
 				if(result.roleId==1){
@@ -152,13 +152,20 @@ export class UserController extends BaseController implements IUser {
 		})
 	}
 
-	async register({body}: Request<{}, {}, UserRegisterDto>, res: Response, next: NextFunction): Promise<void> {
-		const result = await this.userService.createUser(body);
+	async register(req: Request<{}, {}, UserRegisterDto>, res: Response, next: NextFunction): Promise<void> {
+		console.log('controller');
+		const result = await this.userService.createUser(req.body);
 		if (!result) {
-			return next(new HTTPError(422, 'Такой пользователь уже существует'));
-		}
-		this.ok(res, { email: result.email, id: result.id });
+			return next(new HTTPError(422, 'this user already exists'));
+		} else {
+			
+			res.status(200);
+			res.end(JSON.stringify({ name: result.name }));
+			}
+		
 	}
+
+
 	async info({user_id}: Request<{}, {}, UserRegisterDto>, res: Response, next: NextFunction): Promise<void> {
 		console.log('info');
 		if (user_id){

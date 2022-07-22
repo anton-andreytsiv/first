@@ -3,6 +3,7 @@ import Home from '../components/homePage'
 import About from '../components/aboutPage'
 import Products from '../components/productsPage'
 import Cart from '../components/cartPage'
+import RegisterPage from '../components/register'
 
 const routes = [
     {
@@ -24,6 +25,11 @@ const routes = [
         path: "/cart",
         name: "cart",
         component: Cart
+    },
+    {
+        path: "/register",
+        name: "register",
+        component: RegisterPage
     }
 ]
 

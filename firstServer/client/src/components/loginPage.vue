@@ -4,6 +4,8 @@
    <input type="text" name="email" placeholder="Username" required v-model="email"> 
    <input type="password" name="password" placeholder="Password" required v-model="password">
    <input type="submit" value="login" v-on:click="login">
+   <hr />
+   <router-link to="/register">register</router-link>
    </div>
 </template>
 
@@ -24,7 +26,8 @@ export default {
     login: async function () {
       const res = await loginService.login(this.email, this.password)
       if (res){
-        this.$emit('login')
+       // this.$emit('login')
+        this.emitter.emit('login')
        
       }
     }

@@ -42,10 +42,9 @@ function connectRabbit(){
             connectRabbit();
         },10000)
         
-    }
-    if(!connection){
+    }else if(!connection){
         setTimeout(()=>{
-            console.log('trying to reconnect');
+            console.log('trying to reconnect2');
             connectRabbit();
         },10000)
     } else     connection.createChannel(function(error1, channel) {

@@ -1,7 +1,7 @@
 <template>
 <div> 
 <h1> Products page</h1>
-
+<div v-if="user">
 <div v-for="product in products" :key="product.id" class="product">
 <div class="left"><img v-bind:src="getImgUrl(product.imagePath)" v-bind:alt="product.title" width="150"/></div>
 <div><h3>{{ product.title }}</h3>
@@ -12,11 +12,16 @@
 <input type="button" value="add to cart"  v-bind:ref="'add_' + product.id" class="add" @click="addToCart(product.id)" />
 </p></div>
 </div>
+</div>
+<div v-else>
+<h2>Please login</h2>
 
+</div>
 </div>
 </template>
 <script>
 import productsService from '../productsService.js'
+
 import { ref } from 'vue'
 
 export default {
@@ -27,6 +32,7 @@ export default {
     if(!this.amountArr[id]){
       alert('please insert amount of items you want to buy');
     }   else{
+      
     
       this.cart[id] = this.amountArr[id]
 
@@ -38,7 +44,7 @@ export default {
 
 async setup(){
 
-
+const user = ref(null)
 const products = ref (null)
 const amountArr = ref([])
 let cart = {}
@@ -46,21 +52,37 @@ let cartSave = JSON.parse(localStorage.getItem('cart'))
 if (cartSave){
   cart = cartSave
 }
+if (localStorage.getItem('user')){
+      user.value = localStorage.getItem('user')
+      getProducts()
+    }
 
-products.value = await productsService.getAll();
-for (let i=0; i< products.value.length; i++){
-  amountArr.value[products.value[i].id] = 0;
+async function getProducts(){
+    products.value = await productsService.getAll();
+    for (let i=0; i< products.value.length; i++){
+      amountArr.value[products.value[i].id] = 0;
+    }
 }
 
 function getImgUrl(pic) {
     return require('../assets/'+pic)
 }
-return {products, getImgUrl, amountArr, cart}
-}
+
+return {products, getImgUrl, amountArr, cart, user, getProducts}
+},
+  created () {
+      this.emitter.on('login', () => {
+      this.getProducts();
+      this.user = localStorage.getItem('user')     
+    })
+  }
+
+
 }
 </script>
 
-<style>
+<style scoped>
+
 
 .product {
   display:flex;
