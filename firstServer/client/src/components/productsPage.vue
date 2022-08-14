@@ -2,16 +2,19 @@
 <div> 
 <h1> Products page</h1>
 <div v-if="user">
-<div v-for="product in products" :key="product.id" class="product">
-<div class="left"><img v-bind:src="getImgUrl(product.imagePath)" v-bind:alt="product.title" width="150"/></div>
-<div><h3>{{ product.title }}</h3>
-<p>{{ product.def }}<br />
-<b>Buy this item </b>
-<input type="number" size="2" v-model="amountArr[product.id]" v-bind:ref="'amount_' + product.id" class="amount"/> 
-({{product.quantity}})
-<input type="button" value="add to cart"  v-bind:ref="'add_' + product.id" class="add" @click="addToCart(product.id)" />
-</p></div>
-</div>
+  <div v-if="products">
+    <div v-for="product in products" :key="product.id" class="product">
+    <div class="left"><img v-bind:src="getImgUrl(product.imagePath)" v-bind:alt="product.title" width="150"/></div>
+    <div><h3>{{ product.title }}</h3>
+      <p>{{ product.def }}<br />
+      <b>Buy this item </b>
+      <input type="number" size="2" v-model="amountArr[product.id]" v-bind:ref="'amount_' + product.id" class="amount"/> 
+      ({{product.quantity}})
+      <input type="button" value="add to cart"  v-bind:ref="'add_' + product.id" class="add" @click="addToCart(product.id)" />
+      </p></div>
+    </div><hr />
+  </div>
+  <div v-else><h1>Loading data...</h1></div>
 </div>
 <div v-else>
 <h2>Please login</h2>
@@ -20,9 +23,9 @@
 </div>
 </template>
 <script>
+/* eslint-disable0 */
 import productsService from '../productsService.js'
-
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 
 export default {
   name: 'productsPage',
@@ -31,48 +34,72 @@ export default {
   addToCart(id){
     if(!this.amountArr[id]){
       alert('please insert amount of items you want to buy');
-    }   else{
-      
-    
+    }   else{    
       this.cart[id] = this.amountArr[id]
-
       this.emitter.emit('addCart', this.cart)
       localStorage.setItem('cart', JSON.stringify(this.cart));
     }}
-
   },
 
 async setup(){
 
-const user = ref(null)
-const products = ref (null)
-const amountArr = ref([])
-let cart = {}
-let cartSave = JSON.parse(localStorage.getItem('cart'))
-if (cartSave){
-  cart = cartSave
-}
-if (localStorage.getItem('user')){
-      user.value = localStorage.getItem('user')
-      getProducts()
+  const user = ref(null)
+  let products = ref(null)
+  const amountArr = ref([])
+  let cart = {}
+  let cartSave = JSON.parse(localStorage.getItem('cart'))
+  if (cartSave){
+    cart = cartSave
+  }
+
+  if (localStorage.getItem('user')){
+        user.value = localStorage.getItem('user')
+      }
+
+  const allProducts = productsService.getAllProducts();
+  
+
+  watchEffect(()=>{
+   if(allProducts.value){
+        products.value = allProducts.value.getAllProducts
+        for (let i=0; i< allProducts.value.getAllProducts.length; i++){
+        amountArr.value[allProducts.value.getAllProducts[i].id] = 0;
+        }
+   }
+  })
+
+ /* const res = computed( () => {
+    console.log('computed')
+    if (allProducts.value){
+      console.log(allProducts.value)
+        for (let i=0; i< allProducts.value.length; i++){
+        amountArr.value[allProducts.value[i].id] = 0;
+      }
+      return true
+    } else{
+      console.log('else')
+      return false;
     }
+    })
 
-async function getProducts(){
-    products.value = await productsService.getAll();
-    for (let i=0; i< products.value.length; i++){
-      amountArr.value[products.value[i].id] = 0;
-    }
-}
 
-function getImgUrl(pic) {
-    return require('../assets/'+pic)
-}
 
-return {products, getImgUrl, amountArr, cart, user, getProducts}
+  async function getProducts(){
+      products.value = await productsService.getAll();
+      for (let i=0; i< products.value.length; i++){
+        amountArr.value[products.value[i].id] = 0;
+      }
+  }
+*/
+  function getImgUrl(pic) {
+      return require('../assets/'+pic)
+  }
+
+  return { getImgUrl, amountArr, cart, user, products}
 },
   created () {
       this.emitter.on('login', () => {
-      this.getProducts();
+      //this.getProducts();
       this.user = localStorage.getItem('user')     
     })
   }

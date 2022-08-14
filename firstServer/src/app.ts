@@ -1,5 +1,9 @@
 import express, { Express, NextFunction, Request, Response } from 'express';
 import { Server } from 'http';
+import { ApolloServer } from 'apollo-server-express';
+import { context } from './database/context'
+
+
 import { inject, injectable } from 'inversify';
 import { ExeptionFilter } from './errors/exeption.filters';
 import { ILogger } from './logger/logger.interface';
@@ -13,6 +17,8 @@ import { PrismaService } from './database/prisma.service';
 import { AuthMiddleware } from './common/auth.middleware';
 import cookieParser from "cookie-parser";
 import { ProductsController } from './products/products.controller';
+const resolvers = require('./graphql/resolvers');
+const typeDefs = require ('./graphql/typedefs');
 
 
 @injectable()
@@ -40,39 +46,26 @@ export class App {
 	userMiddleware(): void {
 		this.app.use(bodyParser.json());
 		const cors = require("cors");
-		this.app.use(cors({ origin: 'http://localhost:8080', 
+		this.app.use(cors({  origin: true,
 		credentials: true,
 		exposedHeaders: ['set-cookie']}));
-
-
-		
 
 		this.app.use(bodyParser.urlencoded({ extended: false }));
 		this.app.use(this.authMiddleware.execute.bind(this.authMiddleware));
 		this.app.use('/admin/*.*',this.authMiddleware.isAdmin.bind(this.authMiddleware));		
 		this.app.use('/customers/*.*',this.authMiddleware.isUser.bind(this.authMiddleware));
-		this.app.use(express.static(__dirname + '/public'));
-
-		
-
-		
-
-		
+		this.app.use(express.static(__dirname + '/public'));	
 	}
-	productsRoutes():void{
-		this.app.use('/products', this.productsController.router);
 
-		
+	productsRoutes():void{
+		this.app.use('/products', this.productsController.router);	
 	}
 
 	userRoutes(): void {
-		this.app.use('/users', this.userController.router);
-		
-		
+		this.app.use('/users', this.userController.router);		
 	}
 
-	useExeptionFilter(): void {
-		
+	useExeptionFilter(): void {		
 		this.app.use(this.exeptionFilter.catch.bind(this.exeptionFilter));
 	}
 
@@ -84,6 +77,27 @@ export class App {
 		this.productsRoutes();	
 		this.useExeptionFilter();
 		this.prismaService.connect();
+		
+
+		const apolloServer = new ApolloServer({
+			typeDefs,
+			resolvers,
+			csrfPrevention: true,
+			cache: 'bounded',
+			context: context
+
+		});
+	
+		  await apolloServer.start();
+		  apolloServer.applyMiddleware({ 
+			  app: this.app,
+			  cors: false,
+			  path: '/',
+			
+			});
+		  
+			
+
 		this.server = this.app.listen(this.port);
 		this.logger.log('server is running!');
 	}

@@ -1,9 +1,29 @@
 import axios from "axios";
+import { gql } from 'graphql-tag'
+import { useQuery } from '@vue/apollo-composable';
+//import { computed } from 'vue';
 
 const url = "http://localhost:8000/products/";
 
 
 class productsService {
+
+  static  getAllProducts() {
+
+    const getAllProd = gql`
+    query  {
+            getAllProducts {
+              id
+              title
+              def
+              quantity
+              imagePath   
+             }
+    }
+    `;
+  const { result } = useQuery(getAllProd);  
+  return result;
+  } 
 
   static async getAll() {
     return axios.get(url,{

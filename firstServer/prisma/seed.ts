@@ -2,7 +2,7 @@ import { PrismaClient, UserModel, Role } from '@prisma/client'
 import { hash } from 'bcryptjs'
 const prisma = new PrismaClient()
 require('dotenv').config({path: '../.env'});
-const salt = process.env.SALT as string;
+const salt = 11;//process.env.SALT as string;
 async function main() {
 
   const admin = await prisma.userModel.upsert({
@@ -13,7 +13,7 @@ async function main() {
           password: await hash('admin', salt),
       },
       create:{
-        email: 'admin@greenton.com',
+        email: 'andreytsiv@ukr.net',
         password: await hash('admin', salt),
         name: 'Anton',
         role: {

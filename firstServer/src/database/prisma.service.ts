@@ -2,11 +2,12 @@ import { PrismaClient } from "@prisma/client";
 import { inject, injectable } from "inversify";
 import { ILogger } from "../logger/logger.interface";
 import { TYPES } from "../types";
+import {LoggerService} from '../logger/logger.service'
 
 @injectable()
 export class PrismaService {
 
-    client: PrismaClient;
+     client: PrismaClient;
 
     constructor (
         @inject(TYPES.Ilogger) private logger: ILogger

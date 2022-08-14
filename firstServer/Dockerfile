@@ -10,5 +10,5 @@ USER node
 #CMD [ "npm", "run", "dev"]
 RUN npx prisma generate
 RUN npx prisma migrate
-RUN npx prisma seed
+#RUN npm run seed2
 CMD ["npm", "run", "dev"]

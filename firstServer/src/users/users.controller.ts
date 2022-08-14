@@ -86,7 +86,7 @@ export class UserController extends BaseController implements IUser {
 			
 			if (result) {
 				const jwt = await this.signJwt(result.id, req.body.email, this.configService.get('SECRET'))
-				res.cookie('token',jwt, { maxAge: 9000000, httpOnly: false });
+				res.cookie('token',jwt, { maxAge: 9000000, httpOnly: false, sameSite: 'none'});
 				req.user_id = result.id;
 				req.email = result.email;
 				if(result.roleId==1){
