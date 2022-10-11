@@ -1,15 +1,23 @@
 import axios from "axios";
 import { gql } from 'graphql-tag'
-import { useQuery } from '@vue/apollo-composable';
-//import { computed } from 'vue';
+import { useQuery, useMutation, provideApolloClient } from '@vue/apollo-composable';
+import  apolloClient  from './main.js'
+import { watchEffect } from 'vue'
+import { useCookies } from "vue3-cookies";
+import jwt_decode from "jwt-decode";
+
 
 const url = "http://localhost:8000/products/";
+const { cookies } = useCookies();
+let token = cookies.get('token');
+if (token){
+   token =  jwt_decode(token);
+}
 
 
 class productsService {
 
   static  getAllProducts() {
-
     const getAllProd = gql`
     query  {
             getAllProducts {
@@ -21,65 +29,88 @@ class productsService {
              }
     }
     `;
-  const { result } = useQuery(getAllProd);  
-  return result;
-  } 
+    const { result } = useQuery(getAllProd);  
+    return result;
+  }   
 
-  static async getAll() {
-    return axios.get(url,{
+  static getMyOrders() {   
+    const getMyOrders = gql`
+    query Query($userId: Int) {
+        getMyOrders(userId: $userId) {
+          id
+          products {
+            product {
+              title
+            }
+            quantity
+          }
+        }
+      }
+    `;
+    const { result } = useQuery(getMyOrders, {userId: token.id});  
+    return result;
+}
+
+static async getAllProducts_REST() {
+  return axios.get(url,{
+    withCredentials: true
+  }).then (response => { 
+      
+    if (response.status == 200) {      
+     return response.data;
+    }
+    else {
+      alert ("data fetch error");
+      return null
+    }    
+  }).catch(error => console.log(error));
+}
+static async getMyOrders_REST() {
+   return axios.get(url+'myOrders',{
       withCredentials: true
-    }).then (response => { 
-        
-      if (response.status == 200) {
-        
-       return response.data;
+        }).then (response => {  
+          if (response.status == 200) { 
+            return response.data;
+          }
+          else {
+            alert ("data fetch error");
+            return null
+          }
+        }).catch(error => console.log(error));
+  }
+
+
+
+  static buyP(prod){
+    provideApolloClient(apolloClient);
+    if (!token){
+     return false
       }
       else {
-        alert ("data fetch error");
-        return null
+        console.log(token.id)
       }
 
-      
-    }).catch(error => console.log(error));
+    const { mutate: sendData } = useMutation(gql`
+    mutation buyProducts ($data: String!, $user_id: Int) {
+      buyProducts (prod: $data, user_id: $user_id) {
+        id
+      }
+    }
+  `, {
+    variables: {
+      data: prod,
+      user_id: token.id
+    },
+  })
+  const result2 = sendData()
+  watchEffect(() => {
+    if(result2){
+      console.log(result2);
+    }
+  })
+  
   }
-  static async getMyOrders() {
-    return axios.get(url+'myOrders',{
-      withCredentials: true
-    }).then (response => { 
-        
-      if (response.status == 200) {
-        
-       return response.data;
-      }
-      else {
-        alert ("data fetch error");
-        return null
-      }
-
-      
-    }).catch(error => console.log(error));
-  }
-
-  static async buyProducts(prod) {
-    return axios.post(url+'buy',prod,{
-      withCredentials: true
-    }).then (response => { 
-        
-      if (response.status == 200) {
-        
-       return response.data;
-      }
-      else if(response.status == 455) {
-        return 'no items'
-      }
-      else {
-        alert ("error of buying products");
-        return null
-      }
-
-      
-    }).catch(error => console.log(error));
-  }
+  
 
 
 }

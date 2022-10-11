@@ -21,6 +21,7 @@
   "author": "Anton Andreytsiv",
   "license": "ISC",
   "dependencies": {
+    "@paljs/plugins": "^4.1.0",
     "@prisma/client": "^3.11.1",
     "@types/jsonwebtoken": "^8.5.8",
     "amqplib": "^0.10.0",

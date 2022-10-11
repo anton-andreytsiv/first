@@ -8,7 +8,6 @@ import {ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client/core'
 
 
 const httpLink = createHttpLink({
-  // You should use an absolute URL here
   uri: 'http://localhost:8000/graphql',
 })
 
@@ -32,7 +31,7 @@ const app = createApp({
 app.config.globalProperties.emitter = emitter
 
 app.use(router).use(store).mount('#app')
-
+export default apolloClient;
 
 
 

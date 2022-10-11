@@ -33,15 +33,25 @@ type Orders{
 
 type ProductsInOrder{
         id:ID!
-        idProduct: Products
+        product: Products
         quantity: Int
         idOrder: Orders
   
 }
+input productArr {
+        count: Int
+}
+input userId{
+  id: ID
+}
     type Query {
         getAllProducts: [Products]    
         getOrders(userId: Int): [Orders]
+        getMyOrders(userId: Int): [Orders]
         }
+    type Mutation {
+      buyProducts (prod: String!, user_id: Int): Orders
+    }
  `;
 
  module.exports = typeDefs;

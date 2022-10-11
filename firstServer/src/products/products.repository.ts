@@ -89,7 +89,8 @@ export class ProductsRepository implements IProductsRepository{
                     include:{
                         product:{
                             select:{
-                                title: true
+                                title: true,
+                                id:true
                             }
                         }
                     },

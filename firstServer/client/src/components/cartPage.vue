@@ -22,52 +22,47 @@ import { ref } from 'vue'
 export default {
   name: 'cartPage',
  
-
   methods:{
+
   Change(id){
     if(!this.amountArr[id]){
       alert('please insert amount of items you want to buy');
-    }   else{
-    
+    } else {    
       this.buyProducts[id] = this.amountArr[id]
-
       localStorage.setItem('cart', JSON.stringify(this.buyProducts));
     }},
 
   Delete(id){
     if(!this.amountArr[id]){
       alert('please insert amount of items you want to buy');
-    }   else{
-    
+    } else {
       delete this.buyProducts[id]
-
       localStorage.setItem('cart', JSON.stringify(this.buyProducts));
       this.init()
       this.emitter.emit('addCart', this.buyProducts)
     }},
 
-    async Buy(){
+  async Buy(){
         
-        if(this.buyProducts && Object.keys(this.buyProducts).length){
-           let result = await productsService.buyProducts(this.buyProducts)
-           if (result == 'no items'){
-             alert ('not enogh items left')
-           } else {
-             console.log(result)
-             alert ('Your order is in progress. Thank you!')
-             this.buyProducts = {};
-             localStorage.removeItem('cart')
-             this.emitter.emit('addCart', this.buyProducts)
-             this.$router.push({ name: 'Home' })
-
-           }
-           
-        } else {
+    if(this.buyProducts && Object.keys(this.buyProducts).length){
+       let result = await productsService.buyP(JSON.stringify(this.buyProducts))
+      
+      if (result == 'no items'){
+         alert ('not enogh items left')
+         } 
+      else {
+        alert ('Your order is in progress. Thank you!')
+        this.buyProducts = {};
+        localStorage.removeItem('cart')
+        this.emitter.emit('addCart', this.buyProducts)
+        this.$router.push({ name: 'Home' })
+      }     
+   } 
+   else {
             alert ('no items to buy!')
         }
-    }
-
-  },
+  }
+},
 
 async setup(){
 
@@ -78,34 +73,28 @@ const amountArr = ref([])
 let cart = {};
 products = await productsService.getAll();
 
-function init() { 
-    
+function init() {     
 
-    buyProducts = JSON.parse(localStorage.getItem('cart'));
-    if (buyProducts){
-
-        let bProdKeys = Object.keys(buyProducts)
-
-        prodData.value = products.filter(prod =>{      
-            if(bProdKeys.includes(prod.id.toString())){
-                amountArr.value[prod.id] = buyProducts[prod.id]
-                
-                return true
-            } 
-        })
-    }
+  buyProducts = JSON.parse(localStorage.getItem('cart'));
+  if (buyProducts){
+        
+    let bProdKeys = Object.keys(buyProducts)
+    prodData.value = products.filter(prod =>{      
+    if(bProdKeys.includes(prod.id.toString())){
+      amountArr.value[prod.id] = buyProducts[prod.id]
+      return true
+      } 
+    })
+  }
 }
 init()
 
 function getImgUrl(pic) {
     return require('../assets/'+pic)
 }
-return { getImgUrl, amountArr, cart, prodData, buyProducts, init}
-},
-created () {
-     
 
-    
-  }
+return { getImgUrl, amountArr, cart, prodData, buyProducts, init}
+}
+
 }
 </script>

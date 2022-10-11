@@ -31,6 +31,7 @@ export default {
   name: 'productsPage',
 
   methods:{
+    
   addToCart(id){
     if(!this.amountArr[id]){
       alert('please insert amount of items you want to buy');
@@ -57,8 +58,6 @@ async setup(){
       }
 
   const allProducts = productsService.getAllProducts();
-  
-
   watchEffect(()=>{
    if(allProducts.value){
         products.value = allProducts.value.getAllProducts
@@ -68,38 +67,15 @@ async setup(){
    }
   })
 
- /* const res = computed( () => {
-    console.log('computed')
-    if (allProducts.value){
-      console.log(allProducts.value)
-        for (let i=0; i< allProducts.value.length; i++){
-        amountArr.value[allProducts.value[i].id] = 0;
-      }
-      return true
-    } else{
-      console.log('else')
-      return false;
-    }
-    })
-
-
-
-  async function getProducts(){
-      products.value = await productsService.getAll();
-      for (let i=0; i< products.value.length; i++){
-        amountArr.value[products.value[i].id] = 0;
-      }
-  }
-*/
   function getImgUrl(pic) {
       return require('../assets/'+pic)
   }
 
   return { getImgUrl, amountArr, cart, user, products}
 },
+
   created () {
       this.emitter.on('login', () => {
-      //this.getProducts();
       this.user = localStorage.getItem('user')     
     })
   }

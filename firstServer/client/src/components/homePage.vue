@@ -11,7 +11,7 @@
 
 <script>
 import productsService from '../productsService.js'
-//import { ref } from 'vue'
+import { watchEffect,  ref } from 'vue'
 
 export default {
   name: 'HomePage',
@@ -19,9 +19,13 @@ export default {
 
 
 async setup(){
-    let orders = await productsService.getMyOrders()
-    if(!orders[0].id)
-    orders = []
+  let orders = ref([])
+  let myOrders =  productsService.getMyOrders()
+  watchEffect(()=>{
+      if(myOrders.value){
+       orders.value = myOrders.value.getMyOrders
+      }
+  })
     return {orders}
 }
 }
