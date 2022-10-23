@@ -21,34 +21,35 @@
 import loginPage from './components/loginPage.vue'
 import { ref } from 'vue'
 import { useCookies } from "vue3-cookies";
+import loginService from './loginService.js';
 
 export default {
   name: 'App',
-  data(){
-    return {
-      user_role: null,
-      loginu: false
-    }
-  },
+
   setup(){
     const { cookies } = useCookies();
     const user = ref (null)
     const cartAmount = ref (0)
-    const cart2 = JSON.parse(localStorage.getItem('cart'));
-     if (cart2){
-      cartAmount.value = Object.keys(cart2).length
+    const savedCart = JSON.parse(localStorage.getItem('cart'));
+     if (savedCart){
+      cartAmount.value = Object.keys(savedCart).length
      }
 
     if (localStorage.getItem('user')){
       user.value = localStorage.getItem('user')
     }
     
-    function logOut () {
+    async function logOut () {
+      const res = await loginService.logout()
+      if (res){ 
       user.value = null
-      this.cookies.remove("token");
+      //this.cookies.remove("token");
       localStorage.removeItem('user')
       localStorage.removeItem('role')
       localStorage.removeItem('cart')
+      } else {
+        console.log(res)
+      }
 
     }
 

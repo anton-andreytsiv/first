@@ -50,7 +50,7 @@ input userId{
         getMyOrders(userId: Int): [Orders]
         }
     type Mutation {
-      buyProducts (prod: String!, user_id: Int): Orders
+      buyProducts (prod: String!, user_id: Int, email: String): Orders
     }
  `;
 

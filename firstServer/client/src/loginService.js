@@ -53,6 +53,21 @@ class loginService {
       
     }).catch(error => console.log(error));
   }
+
+  static async logout (){
+    return axios.get(url+'logout',
+    { withCredentials: true })
+    .then (response => { 
+      if (response.status == 200) {
+       return response.data;
+      }
+      else {
+        console.log(response)
+        alert ("logout error");
+        return null
+      }      
+    }).catch(error => console.log(error));
+  }
   
 
 }

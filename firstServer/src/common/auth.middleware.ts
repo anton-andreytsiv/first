@@ -18,7 +18,7 @@ export class AuthMiddleware implements IMiddlware{
     async execute(req: Request, res:Response, next: NextFunction){
         const path = require('path');
         console.log('root auth  ' + req.path);
-        if  (req.path == '/' || req.path == '/users/register' || req.path == '/graphql'){
+        if  (req.path == '/' || req.path == '/users/register' || req.path == '/graphql' || req.path == '/users/logout'){
             next();
         } else {
 

@@ -33,7 +33,8 @@ class productsService {
     return result;
   }   
 
-  static getMyOrders() {   
+  static getMyOrders() {  
+    console.log('servise get my ord') 
     const getMyOrders = gql`
     query Query($userId: Int) {
         getMyOrders(userId: $userId) {
@@ -47,11 +48,12 @@ class productsService {
         }
       }
     `;
-    const { result } = useQuery(getMyOrders, {userId: token.id});  
+    const { result } = useQuery(getMyOrders, {userId: 1});  
     return result;
 }
 
 static async getAllProducts_REST() {
+
   return axios.get(url,{
     withCredentials: true
   }).then (response => { 
@@ -79,8 +81,6 @@ static async getMyOrders_REST() {
         }).catch(error => console.log(error));
   }
 
-
-
   static buyP(prod){
     provideApolloClient(apolloClient);
     if (!token){
@@ -91,15 +91,16 @@ static async getMyOrders_REST() {
       }
 
     const { mutate: sendData } = useMutation(gql`
-    mutation buyProducts ($data: String!, $user_id: Int) {
-      buyProducts (prod: $data, user_id: $user_id) {
+    mutation buyProducts ($data: String!, $user_id: Int, $email:String) {
+      buyProducts (prod: $data, user_id: $user_id, email: $email) {
         id
       }
-    }
+    } 
   `, {
     variables: {
       data: prod,
-      user_id: token.id
+      user_id: token.id,
+      email: token.email
     },
   })
   const result2 = sendData()

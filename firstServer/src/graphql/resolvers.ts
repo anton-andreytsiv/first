@@ -2,6 +2,7 @@ import { PrismaService } from "../database/prisma.service";
 import { context, Context } from "../database/context"
 import { argsToArgsConfig } from "graphql/type/definition";
 import { PrismaSelect } from '@paljs/plugins';
+import { connectRabbit } from '../rabbitmq/sendmail'
 
 const resolvers = {
     Query :{
@@ -17,23 +18,23 @@ const resolvers = {
         },
         getMyOrders: async (_parent, args: {userId: number}, context: Context, info) => {
             const select = new PrismaSelect(info).value; 
-            return  await context.prisma.orders.findMany({
+            const res =  await context.prisma.orders.findMany({
                 where:{
                     userId: args.userId,
                     done: false
                 },
                 ...select
             });
+            console.log(res)
+            return res;
         }
 
 
     },
     Mutation:{
-        buyProducts: async (_parent, args: {prod, user_id}, context: Context) => {
+        buyProducts: async (_parent, args: {prod, user_id, email}, context: Context) => {
             let productLess = false;
             const prod = JSON.parse(args.prod)
-            console.log('products ',prod);
-            console.log('id = ', args.user_id)
 			let allProducts = await context.prisma.products.findMany({
                 select:
                     {
@@ -76,15 +77,22 @@ const resolvers = {
                     }            
                 })
                 
-                return await context.prisma.orders.create({
+                const result =  await context.prisma.orders.create({
                     data:{
                         done: false,
                         userId: args.user_id,
                         products: {
                             create: orderArr,
-                        },
+                        },  
                     },
                })
+               
+            try{
+                await connectRabbit(result.id, args.email)
+            } catch (e){
+                console.log(e)
+            } 
+               return result
             }
 
         }

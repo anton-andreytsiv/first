@@ -60,6 +60,7 @@ async setup(){
   const allProducts = productsService.getAllProducts();
   watchEffect(()=>{
    if(allProducts.value){
+    console.log ('pres', allProducts.value.getAllProducts)
         products.value = allProducts.value.getAllProducts
         for (let i=0; i< allProducts.value.getAllProducts.length; i++){
         amountArr.value[allProducts.value.getAllProducts[i].id] = 0;

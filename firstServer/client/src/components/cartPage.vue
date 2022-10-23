@@ -71,7 +71,7 @@ let buyProducts = {}
 const prodData = ref (null)
 const amountArr = ref([])
 let cart = {};
-products = await productsService.getAll();
+products = await productsService.getAllProducts_REST();
 
 function init() {     
 

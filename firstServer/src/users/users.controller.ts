@@ -86,7 +86,7 @@ export class UserController extends BaseController implements IUser {
 			
 			if (result) {
 				const jwt = await this.signJwt(result.id, req.body.email, this.configService.get('SECRET'))
-				res.cookie('token',jwt, { maxAge: 9000000, httpOnly: false, sameSite: 'none'});
+				res.cookie('token',jwt, { maxAge: 9000000, httpOnly: true, sameSite: 'none'});
 				req.user_id = result.id;
 				req.email = result.email;
 				if(result.roleId==1){
@@ -177,10 +177,11 @@ export class UserController extends BaseController implements IUser {
 		}
 	}
 	logout (req: Request, res: Response, next: NextFunction): void{
-		console.log('logout');
-		res.cookie('token','my', { maxAge: 1, httpOnly: true });
+		console.log('logout get method');
+		res.cookie('token','my', { maxAge: 1, httpOnly: true, sameSite: 'none' });
 		req.user_id = 0;
 		req.role = '';
-		goUrl(res, 'index.html');
+		res.status(200);
+		res.end('logout');
 	}
 }
