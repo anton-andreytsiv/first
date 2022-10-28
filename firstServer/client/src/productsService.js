@@ -34,6 +34,7 @@ class productsService {
   }   
 
   static getMyOrders() {  
+    provideApolloClient(apolloClient);
     console.log('servise get my ord') 
     const getMyOrders = gql`
     query Query($userId: Int) {

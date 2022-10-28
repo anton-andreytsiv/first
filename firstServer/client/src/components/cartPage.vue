@@ -16,8 +16,8 @@
 </template>
 
 <script>
-import productsService from '../productsService.js'
 import { ref } from 'vue'
+import productsService from '../productsService.js'
 
 export default {
   name: 'cartPage',
@@ -71,7 +71,7 @@ let buyProducts = {}
 const prodData = ref (null)
 const amountArr = ref([])
 let cart = {};
-products = await productsService.getAllProducts_REST();
+products = await productsService.getAllProducts();
 
 function init() {     
 

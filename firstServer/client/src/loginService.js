@@ -59,7 +59,12 @@ class loginService {
     { withCredentials: true })
     .then (response => { 
       if (response.status == 200) {
-       return response.data;
+        localStorage.removeItem('user')
+        localStorage.removeItem('role')
+        localStorage.removeItem('cart')
+        
+      
+        return response.data;
       }
       else {
         console.log(response)

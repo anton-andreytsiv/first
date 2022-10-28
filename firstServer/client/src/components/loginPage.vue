@@ -12,7 +12,6 @@
 <script>
 import loginService from '../loginService.js';
 
-
 export default {
   name: 'loginPage',
   data() {
@@ -26,9 +25,7 @@ export default {
     login: async function () {
       const res = await loginService.login(this.email, this.password)
       if (res){
-       // this.$emit('login')
         this.emitter.emit('login')
-       
       }
     }
   } 
